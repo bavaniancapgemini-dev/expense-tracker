@@ -22,7 +22,6 @@ def load_expenses(username):
 
         return []
     
-    
 def export_csv(expenses):
 
     file = open("expenses.csv", "w")

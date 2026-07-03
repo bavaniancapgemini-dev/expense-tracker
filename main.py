@@ -9,8 +9,16 @@ from colorama import Fore, Style, init
 from graph import expense_graph
 from ai import ai_insights
 from auth import register, login
+from database import *
+from edit import edit_expense
+from sorter import *
+from filter import *
+from analytics import expense_statistics, sort_expenses, category_analytics
 
 init(autoreset=True)
+username = "default_user"
+
+expenses = load_expenses(username)
 print("\n========== LOGIN SYSTEM ==========\n")
 
 print("1. Login")
@@ -50,7 +58,7 @@ elif auth_choice == "2":
 
         exit()
 
-expenses = load_expenses(username)
+expenses = []
 while True:
 
     title()
@@ -70,7 +78,13 @@ while True:
     print(Fore.MAGENTA + "13. Finance Dashboard")
     print(Fore.BLUE + "14. Expense Graph")
     print(Fore.YELLOW + "15. AI Insights")
-    print(Fore.RED + "16. Exit")
+    print(Fore.GREEN + "16. Sort Expenses")
+    print(Fore.GREEN + "17. Filter By Category")
+    print(Fore.BLUE + "18. Search By Date")
+    print(Fore.WHITE + "19. Statistics Dashboard")
+    print(Fore.WHITE + "20. Category Analytics")
+    print(Fore.WHITE + "21. Sort Expenses")
+    print(Fore.RED + "22. Exit")
 
     choice = input("Choose: ")
 
@@ -100,15 +114,15 @@ while True:
         
         date = datetime.now().strftime("%Y-%m-%d")
         
-        expense = name + "-" + str(amount) + "-" + category + "-" + date
-        
-        expenses.append(expense)
-        
-        save_expenses(expenses, username)
+        add_expense(username,name,amount,category,date)
+
+        print("Expense Added")
         
         print(Fore.GREEN + "Expense Added Successfully")
 
     elif choice == "2":
+        
+        expenses = get_expenses(username)
 
         show_expenses(expenses)
 
@@ -197,47 +211,29 @@ while True:
 
     elif choice == "12":
 
+        expenses = get_expenses(username)
+
         show_expenses(expenses)
 
-        index = int(input("Enter Expense Number To Edit: ")) - 1
+        expense_id = int(input("Enter Expense ID To Edit: "))
 
-        if index >= 0 and index < len(expenses):
+        name = input("New Name: ")
 
-            old = expenses[index].split("-")
+        amount = float(input("New Amount: "))
 
-            print("Leave blank to keep old value")
+        category = input("New Category: ")
 
-            new_name = input(f"New Name ({old[0]}): ")
+        date = input("New Date (YYYY-MM-DD): ")
 
-            new_amount = input(f"New Amount ({old[1]}): ")
+        edit_expense(
 
-            new_category = input(f"New Category ({old[2]}): ")
-
-            name = new_name if new_name != "" else old[0]
-
-            amount = new_amount if new_amount != "" else old[1]
-
-            category = new_category if new_category != "" else old[2]
-
-            if len(old) >= 4:
-                
-                date = old[3]
-                
-            else:
-                
-                date = datetime.now().strftime("%Y-%m-%d")
-
-            updated = name + "-" + amount + "-" + category + "-" + date
-
-            expenses[index] = updated
-
-            save_expenses(expenses, username)
-
-            print(Fore.YELLOW + "Expense Updated Successfully")
-
-        else:
-
-            print("Invalid Expense Number")
+            username,
+            expense_id,
+            name,
+            amount,
+            category,
+            date
+    )
             
     elif choice == "13":
         
@@ -264,8 +260,106 @@ while True:
     elif choice == "15":
 
         ai_insights(expenses)
-
+        
     elif choice == "16":
+
+        expenses = get_expenses(username)
+
+        print("1. Highest")
+        print("2. Lowest")
+        print("3. Latest")
+
+        sort_choice = input("Choose: ")
+
+        if sort_choice == "1":
+
+            data = sort_highest(expenses)
+
+        elif sort_choice == "2":
+
+            data = sort_lowest(expenses)
+
+        else:
+
+            data = sort_latest(expenses)
+
+        show_expenses(data)
+        
+    elif choice == "17":
+
+        category = input("Enter Category: ")
+
+        data = filter_category(username, category)
+
+        show_expenses(data)
+        
+    elif choice == "18":
+
+        date = input("Enter Date (YYYY-MM-DD): ")
+
+        data = search_by_date(username, date)
+
+        show_expenses(data)
+        
+    elif choice == "19":
+
+        stats = expense_statistics(expenses)
+
+        print("\n====== STATISTICS DASHBOARD =======\n")
+
+        print("Total Expenses :", stats["total"])
+        
+        print("Average Expense :", stats["average"])
+        
+        print("Highest Expense :", stats["highest"])
+        
+        print("Lowest Expense  :", stats["lowest"])
+        
+        print("Total Entries    :", stats["entries"])
+        
+    elif choice == "20":
+
+        report = category_analytics(expenses)
+
+        print("\n===== CATEGORY ANALYTICS =====")
+
+        for category, percent in report.items():
+
+            print(f"{category} : {percent}%")
+            
+    elif choice == "21":
+
+        print("\n1. Highest Amount")
+
+        print("2. Lowest Amount")
+
+        print("3. Name A-Z")
+
+        print("4. Latest Date")
+
+        option = input("Choose sorting: ")
+
+        if option == "1":
+
+            expenses = sort_expenses(expenses, "highest")
+
+        elif option == "2":
+
+            expenses = sort_expenses(expenses, "lowest")
+
+        elif option == "3":
+
+            expenses = sort_expenses(expenses, "name")
+
+        elif option == "4":
+
+            expenses = sort_expenses(expenses, "latest")
+
+        save_expenses(expenses, username)
+
+        print("Expenses Sorted")
+
+    elif choice == "22":
 
         break
 

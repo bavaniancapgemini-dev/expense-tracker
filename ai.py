@@ -8,7 +8,7 @@ def ai_insights(expenses):
 
     for expense in expenses:
 
-        parts = expense.split("-")
+        parts = expense
 
         if len(parts) < 4:
             continue

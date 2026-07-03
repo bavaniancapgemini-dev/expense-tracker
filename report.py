@@ -4,9 +4,11 @@ def total_expense(expenses):
 
     for expense in expenses:
 
-        parts = expense.split("-")
+        parts = expense
 
         amount = float(parts[1])
+        
+        category = parts[2]
 
         total += amount
 
@@ -20,11 +22,13 @@ def highest_expense(expenses):
 
     for expense in expenses:
 
-        parts = expense.split("-")
+        parts = expense
 
         name = parts[0]
 
         amount = float(parts[1])
+        
+        category = parts[2]
 
         if amount > highest_amount:
 
@@ -52,7 +56,9 @@ def category_report(expenses):
 
     for expense in expenses:
 
-        parts = expense.split("-")
+        parts = expense
+        
+        amount = float(parts[1])
 
         category = parts[2]
 
@@ -72,7 +78,7 @@ def monthly_report(expenses):
 
     for expense in expenses:
 
-        parts = expense.split("-")
+        parts = expense
 
         # Skip broken data
         if len(parts) < 3:
@@ -107,7 +113,7 @@ def dashboard(expenses):
 
     for expense in expenses:
 
-        parts = expense.split("-")
+        parts = expense
 
         if len(parts) < 4:
 
