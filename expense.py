@@ -1,13 +1,39 @@
 def show_expenses(expenses):
 
-    print("\n---- EXPENSES ----")
-
     if len(expenses) == 0:
 
-        print("No expenses found")
+        print("No Expenses Found")
 
-    else:
+        return
 
-        for i, expense in enumerate(expenses):
+    print("\n===== ALL EXPENSES =====\n")
 
-            print(i + 1, "-", expense)
+    count = 1
+
+    for expense in expenses:
+
+        parts = expense.split("-")
+
+        if len(parts) < 4:
+
+            continue
+
+        name = parts[0]
+
+        amount = parts[1]
+
+        category = parts[2]
+
+        date = parts[3]
+
+        print(f"{count}. {name}")
+
+        print(f"   Amount   : {amount}")
+
+        print(f"   Category : {category}")
+
+        print(f"   Date     : {date}")
+
+        print()
+
+        count += 1
